@@ -34,7 +34,7 @@ const authenticatedRoutes = () => {
   return app;
 };
 
-const createApp = () => {
+export const createApp = () => {
   const serveStaticRoutes = staticRoutes();
   const serveAuthenticatedRoutes = authenticatedRoutes();
 
