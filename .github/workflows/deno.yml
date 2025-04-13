@@ -43,6 +43,6 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "anonymousthinker-books-server"
+          project: "gouradhikar-deno-deploy-85"
           entrypoint: "server.js"
           root: "."
