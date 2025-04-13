@@ -5,6 +5,8 @@ const kv = await Deno.openKv();
 const staticRoutes = () => {
   const app = new Hono();
 
+  app.get("/", (c) => c.redirect("/books"));
+
   app.get("/test", (c) => {
     return c.text("Working Fine!");
   });
@@ -29,6 +31,12 @@ const authenticatedRoutes = () => {
     const body = await c.req.json();
     const response = await kv.set(["books", body.title], body);
     return c.json(response);
+  });
+
+  app.delete("/delete-book", async (c) => {
+    const title = await c.req.formData();
+    await kv.delete(["books", title.get("title")]);
+    return c.text("deleted");
   });
 
   return app;
