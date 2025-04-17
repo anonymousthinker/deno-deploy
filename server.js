@@ -4,13 +4,15 @@ import { logger } from "hono/logger";
 
 const kv = await Deno.openKv();
 
-const handlePolling = () => {
-  if (kv.get(["events"]) !== undefined)
+const handlePolling = async () => {
+  const res = await kv.get(["events"]);
+  if (res.value) {
     return {
-      status: kv.get(["events"]).value.status,
-      commit: kv.get(["events"]).value.display_title,
-      author: kv.get(["events"]).value.actor.login,
+      status: res.value.status,
+      commit: res.value.display_title,
+      author: res.value.actor.login,
     };
+  }
 };
 
 const staticRoutes = () => {
@@ -52,9 +54,9 @@ const authenticatedRoutes = () => {
     return c.json(response);
   });
 
-  app.post("/poll-status", (c) => {
-    console.log("event", handlePolling());
-    return c.json(handlePolling());
+  app.post("/poll-status", async (c) => {
+    console.log("event", await handlePolling());
+    return c.json(await handlePolling());
   });
 
   app.post("/add-book", async (c) => {
