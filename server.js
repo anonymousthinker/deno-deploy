@@ -1,25 +1,28 @@
 import { Hono } from "hono";
+import { serveStatic } from "hono/deno";
 
-const kv = await Deno.openKv();
+// const kv = await Deno.openKv();
 
 const staticRoutes = () => {
   const app = new Hono();
 
-  app.get("/", (c) => c.redirect("/books"));
+  app.get("/", serveStatic({ root: "./" }));
 
-  app.get("/test", (c) => {
-    return c.text("Working Fine!");
-  });
+  // app.get("/", (c) => c.redirect("/books"));
 
-  app.get("/books", async (c) => {
-    const iter = kv.list({ prefix: ["books"] });
-    const books = [];
-    for await (const res of iter) {
-      books.push(res.value);
-    }
+  // app.get("/test", (c) => {
+  //   return c.text("Working Fine!");
+  // });
 
-    return c.json(books);
-  });
+  // app.get("/books", async (c) => {
+  //   const iter = kv.list({ prefix: ["books"] });
+  //   const books = [];
+  //   for await (const res of iter) {
+  //     books.push(res.value);
+  //   }
+
+  //   return c.json(books);
+  // });
 
   return app;
 };
@@ -29,21 +32,24 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    console.log("here is the event body", body);
-    return c.text("Recieved");
+    console.log("here is the event body", body.workflow_run);
+    if (body.workflow_run.status === "completed") {
+      return c.redirect("/statusPassed.html");
+    }
+    return c.redirect("/statusFailed.html");
   });
 
-  app.post("/add-book", async (c) => {
-    const body = await c.req.json();
-    const response = await kv.set(["books", body.title], body);
-    return c.json(response);
-  });
+  // app.post("/add-book", async (c) => {
+  //   const body = await c.req.json();
+  //   const response = await kv.set(["books", body.title], body);
+  //   return c.json(response);
+  // });
 
-  app.delete("/delete-book", async (c) => {
-    const title = await c.req.formData();
-    await kv.delete(["books", title.get("title")]);
-    return c.text("deleted");
-  });
+  // app.delete("/delete-book", async (c) => {
+  //   const title = await c.req.formData();
+  //   await kv.delete(["books", title.get("title")]);
+  //   return c.text("deleted");
+  // });
 
   return app;
 };
