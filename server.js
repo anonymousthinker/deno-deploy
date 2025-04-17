@@ -27,6 +27,12 @@ const staticRoutes = () => {
 const authenticatedRoutes = () => {
   const app = new Hono();
 
+  app.post("/post-event", async (c) => {
+    const body = await c.req.json();
+    console.log(body);
+    return c.text("Recieved");
+  });
+
   app.post("/add-book", async (c) => {
     const body = await c.req.json();
     const response = await kv.set(["books", body.title], body);
