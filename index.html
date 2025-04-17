@@ -45,7 +45,12 @@
           "https://gouradhikar-deno-deploy-60.deno.dev/poll-status",
           { method: "post" }
         );
-        const { status, commit, author } = await response.json();
+        const object = await response.json();
+        if (object === undefined) {
+          return;
+        }
+
+        const { status, commit, author } = object;
 
         const getColorStatus = (status) => {
           return status === "completed" ? "status-passed" : "status-failed";

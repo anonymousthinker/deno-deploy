@@ -6,6 +6,7 @@ const kv = await Deno.openKv();
 
 const handlePolling = async () => {
   const res = await kv.get(["events"]);
+  console.log("res", res);
   if (res.value) {
     return {
       status: res.value.status,
@@ -42,15 +43,7 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    const response = await kv.set(
-      ["events", body.workflow_run.display_title],
-      body.workflow_run
-    );
-    const iter = kv.list({ prefix: ["events"] });
-    for await (const res of iter) {
-      console.log(res.value);
-    }
-
+    const response = await kv.set(["events"], body.workflow_run);
     return c.json(response);
   });
 
