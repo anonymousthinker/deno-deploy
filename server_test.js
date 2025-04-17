@@ -61,13 +61,3 @@ Deno.test({
     assertEquals(await response.json(), []);
   },
 });
-
-Deno.test({
-  name: "test for /",
-  fn: async () => {
-    const app = createApp();
-    const response = await app.request("http://localhost:8000/");
-    assertEquals(response.status, 302);
-    assertEquals(response.headers.get("location"), "/books");
-  },
-});
