@@ -41,7 +41,10 @@
     <script>
       const fetchStatusAndRender = async () => {
         const statusCard = document.getElementById("status-card");
-        const response = await fetch("/poll-status", { method: "post" });
+        const response = await fetch(
+          "https://gouradhikar-deno-deploy-60.deno.dev/poll-status",
+          { method: "post" }
+        );
         const { status, commit, author } = await response.json();
 
         const getColorStatus = (status) => {
@@ -59,8 +62,10 @@
       };
 
       const main = () => {
-        setInterval(fetchStatusAndRender, 500);
+        setInterval(fetchStatusAndRender, 2000);
       };
+
+      main();
     </script>
   </body>
 </html>

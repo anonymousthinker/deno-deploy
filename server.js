@@ -1,15 +1,17 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
+import { logger } from "hono/logger";
 
-let event = {};
+const event = new Map();
 const kv = await Deno.openKv();
 
 const handlePolling = () => {
-  return {
-    status: event.status,
-    commit: event.display_title,
-    author: event.actor.login,
-  };
+  if (event.size !== 0)
+    return {
+      status: event.get("workflow-event").status,
+      commit: event.get("workflow-event").display_title,
+      author: event.get("workflow-event").actor.login,
+    };
 };
 
 const staticRoutes = () => {
@@ -39,7 +41,7 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    event = body.workflow_run;
+    event.set("workflow-event", body.workflow_run);
     return c.text("done");
   });
 
@@ -68,6 +70,7 @@ export const createApp = () => {
 
   const app = new Hono();
 
+  app.use(logger());
   app.route("/", serveStaticRoutes);
   app.route("/", serveAuthenticatedRoutes);
 
