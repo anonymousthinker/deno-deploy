@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>risk-status</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      div {
+        border: 1px solid black;
+        width: 400px;
+        aspect-ratio: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .status-failed {
+        background-color: rgb(173, 0, 0);
+        color: white;
+      }
+
+      .status-passed {
+        background-color: green;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status-card">
+      <h1>Risk</h1>
+      <article>
+        <h2 id="author"></h2>
+        <p id="commit"></p>
+      </article>
+    </div>
+
+    <script>
+      const fetchStatusAndRender = async () => {
+        const statusCard = document.getElementById("status-card");
+        const response = await fetch("/poll-status", { method: "post" });
+        const { status, commit, author } = await response.json();
+
+        const getColorStatus = (status) => {
+          return status === "completed" ? "status-passed" : "status-failed";
+        };
+
+        const colorClass = getColorStatus(status);
+
+        statusCard.classList.add(colorClass);
+        const authorArea = document.getElementById("author");
+        const commitArea = document.getElementById("commit");
+
+        commitArea.textContent = commit;
+        authorArea.textContent = author;
+      };
+
+      const main = () => {
+        setInterval(fetchStatusAndRender, 500);
+      };
+    </script>
+  </body>
+</html>

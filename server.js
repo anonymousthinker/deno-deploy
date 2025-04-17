@@ -1,12 +1,19 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
 
+let event = {};
 const kv = await Deno.openKv();
+
+const handlePolling = () => {
+  return {
+    status: event.status,
+    commit: event.display_title,
+    author: event.actor.login,
+  };
+};
 
 const staticRoutes = () => {
   const app = new Hono();
-
-  app.get("/", (c) => c.redirect("/statusPassed.html"));
 
   app.get("*", serveStatic({ root: "./" }));
 
@@ -32,12 +39,12 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    console.log("here is the event body", body.workflow_run);
-    if (body.workflow_run.status === "completed") {
-      return c.redirect("/statusPassed.html");
-    }
+    event = body.workflow_run;
+    return c.text("done");
+  });
 
-    return c.redirect("/statusFailed.html");
+  app.post("/poll-status", (c) => {
+    return c.json(handlePolling());
   });
 
   app.post("/add-book", async (c) => {
