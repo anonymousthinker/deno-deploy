@@ -46,6 +46,7 @@ const authenticatedRoutes = () => {
   });
 
   app.post("/poll-status", (c) => {
+    console.log("event", event);
     return c.json(handlePolling());
   });
 
