@@ -2,15 +2,14 @@ import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
 import { logger } from "hono/logger";
 
-const event = new Map();
 const kv = await Deno.openKv();
 
 const handlePolling = () => {
-  if (event.size !== 0)
+  if (kv.get(["events"]) !== undefined)
     return {
-      status: event.get("workflow-event").status,
-      commit: event.get("workflow-event").display_title,
-      author: event.get("workflow-event").actor.login,
+      status: kv.get(["events"]).value.status,
+      commit: kv.get(["events"]).value.display_title,
+      author: kv.get(["events"]).value.actor.login,
     };
 };
 
@@ -41,13 +40,20 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    event.set("workflow-event", body.workflow_run);
-    console.log("event inside post-event", event);
-    return c.text("done");
+    const response = await kv.set(
+      ["events", body.workflow_run.display_title],
+      body.workflow_run
+    );
+    const iter = kv.list({ prefix: ["events"] });
+    for await (const res of iter) {
+      console.log(res.value);
+    }
+
+    return c.json(response);
   });
 
   app.post("/poll-status", (c) => {
-    console.log("event", event);
+    console.log("event", handlePolling());
     return c.json(handlePolling());
   });
 
