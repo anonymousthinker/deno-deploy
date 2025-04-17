@@ -6,7 +6,7 @@ import { serveStatic } from "hono/deno";
 const staticRoutes = () => {
   const app = new Hono();
 
-  app.get("/", serveStatic({ root: "./" }));
+  app.get("*", serveStatic({ root: "./" }));
 
   // app.get("/", (c) => c.redirect("/books"));
 
@@ -36,6 +36,7 @@ const authenticatedRoutes = () => {
     if (body.workflow_run.status === "completed") {
       return c.redirect("/statusPassed.html");
     }
+
     return c.redirect("/statusFailed.html");
   });
 
