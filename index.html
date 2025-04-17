@@ -46,11 +46,11 @@
           { method: "post" }
         );
         const object = await response.json();
-        if (object === undefined) {
-          return;
-        }
+        const { status, commit, author } = obj;
 
-        const { status, commit, author } = object;
+        console.log("status", status, author);
+        console.log("commit", commit);
+        console.log("author", author);
 
         const getColorStatus = (status) => {
           return status === "completed" ? "status-passed" : "status-failed";

@@ -1,12 +1,12 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
 import { logger } from "hono/logger";
+import { cors } from "https://deno.land/x/hono@v3.12.11/middleware.ts";
 
 const kv = await Deno.openKv();
 
 const handlePolling = async () => {
   const res = await kv.get(["events"]);
-  console.log("res", res);
   if (res.value) {
     return {
       status: res.value.status,
@@ -14,6 +14,7 @@ const handlePolling = async () => {
       author: res.value.actor.login,
     };
   }
+  return {};
 };
 
 const staticRoutes = () => {
@@ -48,7 +49,6 @@ const authenticatedRoutes = () => {
   });
 
   app.post("/poll-status", async (c) => {
-    console.log("event", await handlePolling());
     return c.json(await handlePolling());
   });
 
@@ -74,6 +74,7 @@ export const createApp = () => {
   const app = new Hono();
 
   app.use(logger());
+  app.use("/*", cors());
   app.route("/", serveStaticRoutes);
   app.route("/", serveAuthenticatedRoutes);
 
