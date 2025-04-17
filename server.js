@@ -9,7 +9,7 @@ const handlePolling = async () => {
   const res = await kv.get(["events"]);
   if (res.value) {
     return {
-      status: res.value.status,
+      conclusion: res.value.conclusion,
       commit: res.value.display_title,
       author: res.value.actor.login,
     };

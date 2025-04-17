@@ -46,17 +46,21 @@
           { method: "post" }
         );
         const object = await response.json();
-        const { status, commit, author } = obj;
+        const { conclusion, commit, author } = object;
 
-        console.log("status", status, author);
+        if (conclusion === null) {
+          return;
+        }
+
+        console.log("conclusion", conclusion);
         console.log("commit", commit);
         console.log("author", author);
 
-        const getColorStatus = (status) => {
-          return status === "completed" ? "status-passed" : "status-failed";
+        const getColorStatus = (conclusion) => {
+          return conclusion === "completed" ? "status-passed" : "status-failed";
         };
 
-        const colorClass = getColorStatus(status);
+        const colorClass = getColorStatus(conclusion);
 
         statusCard.classList.add(colorClass);
         const authorArea = document.getElementById("author");
@@ -64,6 +68,8 @@
 
         commitArea.textContent = commit;
         authorArea.textContent = author;
+
+        return;
       };
 
       const main = () => {
