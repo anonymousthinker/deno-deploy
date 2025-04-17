@@ -42,6 +42,7 @@ const authenticatedRoutes = () => {
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
     event.set("workflow-event", body.workflow_run);
+    console.log("event inside post-event", event);
     return c.text("done");
   });
 
