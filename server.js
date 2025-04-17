@@ -29,7 +29,7 @@ const authenticatedRoutes = () => {
 
   app.post("/post-event", async (c) => {
     const body = await c.req.json();
-    console.log(body);
+    console.log("here is the event body", body);
     return c.text("Recieved");
   });
 
