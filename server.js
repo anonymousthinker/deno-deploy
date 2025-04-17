@@ -6,6 +6,8 @@ const kv = await Deno.openKv();
 const staticRoutes = () => {
   const app = new Hono();
 
+  app.get("/", (c) => c.redirect("/statusPassed.html"));
+
   app.get("*", serveStatic({ root: "./" }));
 
   app.get("/test", (c) => {
